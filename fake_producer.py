@@ -8,16 +8,11 @@ from datetime import datetime
 from kafka import KafkaProducer
 
 
-# Messages will be serialized as JSON
 def serializer(message):
+    """
+    Serialize messages as JSON
+    """
     return json.dumps(message).encode('utf-8')
-
-
-# Kafka Producer
-producer = KafkaProducer(
-    bootstrap_servers=['localhost:9092'],
-    value_serializer=serializer
-)
 
 
 def read_titles(doc_address) -> list:
@@ -35,11 +30,17 @@ def read_titles(doc_address) -> list:
 
 
 if __name__ == "__main__":
-    # Env variables:
+    # Read env variables:
     topic = os.environ.get('TITLE_TOPIC')
+    kafka_server = os.environ.get('KAFKA_SERVER')
     titles_file = os.environ.get('TEST_TITLES')
     # Read data
     data = read_titles(titles_file)
+    # Kafka Producer
+    producer = KafkaProducer(
+        bootstrap_servers=[kafka_server],
+        value_serializer=serializer
+    )
     # Produces data into topic
     cnt = 0
     while True:
@@ -48,7 +49,7 @@ if __name__ == "__main__":
             sys.exit()
         title = data.pop()
         print(f'{cnt} - Producing title@ {datetime.now()}\n {str(title)} \n')
-        producer.send('messages1', title)
+        producer.send(topic, title)
         # Produces titles in between 2 and 10 seconds
         time_to_sleep = random.randint(2, 10)
         time.sleep(time_to_sleep)
