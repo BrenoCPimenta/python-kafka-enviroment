@@ -17,6 +17,9 @@ if __name__ == "__main__":
         bootstrap_servers=kafka_server,
         auto_offset_reset=kafka_offset
     )
+    print(f"Listening topic {topic}...")
     for title in consumer:
         with open(features_file, 'a') as file:
-            file.write(str(title)+'\n')
+            # Decodes from binary and saves data into file
+            file.write(title.value.decode('ascii')+'\n')
+        print(f"->Title {title.offset} annotated")

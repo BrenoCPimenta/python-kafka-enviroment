@@ -8,7 +8,7 @@ from datetime import datetime
 from kafka import KafkaProducer
 
 
-def serializer(message):
+def serializer(message) -> None:
     """
     Serialize messages as JSON
     """
@@ -24,8 +24,6 @@ def read_titles(doc_address) -> list:
     with open(doc_address, mode='r') as f:
         for line in f:
             data.append(json.loads(line.strip()))
-    for title in data:
-        print(data)
     return data
 
 
