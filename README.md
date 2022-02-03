@@ -12,12 +12,12 @@ For this matter, there are two scripts and two files on the _mock_enviroment/_ f
 ### Execution:
 
 1. Start **KAFKA**
-    1.1. Start **Zookeeper** (ONLY IF NEEDED):
+   1. Start **Zookeeper** (ONLY IF NEEDED):
     (local use: ```bin/zookeeper-server-start.sh config/zookeeper.properties```)
-    1.2 Start **Kafka**:
+   2. Start **Kafka**:
     (local use: ```bin/kafka-server-start.sh config/server.properties```)
 2. Start **Docker** (our application)
 3. Start **Mock Enviroment**:
-    3.1 Enter folder: ```cd mock_enviroment```
-    3.2 Run consumer: ```python3 fake_consumer.py```
-    3.3 Run producer: ```python3 fake_producer.py```
+   1. Enter folder: ```cd mock_enviroment```
+   2. Run consumer: ```python3 fake_consumer.py```
+   3. Run producer: ```python3 fake_producer.py```
