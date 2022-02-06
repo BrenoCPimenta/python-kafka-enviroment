@@ -1,8 +1,10 @@
 import json
 import os
-import env
+from config import env
 from kafka import KafkaConsumer
 from kafka import KafkaProducer
+from features.features_manager import load_features
+from scraper.title_scraper import TitleScraper
 
 
 def serializer(message):
@@ -12,12 +14,13 @@ def serializer(message):
     return json.dumps(message).encode('utf-8')
 
 
-if __name__ == '__main__':
+def main() -> None:
+    """Listen to kafka topics and produce features from URLs"""
     # Read env variables
     kafka_server = os.environ.get('KAFKA_SERVER')
     kafka_offset = os.environ.get('KAFKA_OFFSET')
     topic_features = os.environ.get('FEATURES_TOPIC')
-    topic_titles = os.environ.get('TITLE_TOPIC')
+    topic_urls = os.environ.get('URL_TOPIC')
     # Kafka Producer
     producer = KafkaProducer(
         bootstrap_servers=[kafka_server],
@@ -25,12 +28,19 @@ if __name__ == '__main__':
     )
     # Kafka Consumer
     consumer = KafkaConsumer(
-        topic_titles,
+        topic_urls,
         bootstrap_servers=kafka_server,
         auto_offset_reset=kafka_offset
     )
     cnt = 0
-    for title in consumer:
+    scraper = TitleScraper(15)
+    for url in consumer:
         cnt += 1
-        print(cnt, ' - intermediate:\n', json.loads(title.value), '\n\n')
-        producer.send(topic_features, json.loads(title.value))
+        title = scraper.get_title(url.value)
+        features = load_features(title, url)
+        print(cnt, ' - intermediate:\n', json.loads(features), '\n\n')
+        producer.send(topic_features, json.loads(features))
+
+
+if __name__ == '__main__':
+    main()
