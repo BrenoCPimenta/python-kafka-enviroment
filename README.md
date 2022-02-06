@@ -21,3 +21,5 @@ For this matter, there are two scripts and two files on the _mock_enviroment/_ f
     3.1 Enter folder: ```cd mock_enviroment```
     3.2 Run consumer: ```python3 fake_consumer.py```
     3.3 Run producer: ```python3 fake_producer.py```
+
+4. **Remove data** (FOR LOCAL TESTS): delete any data of your local Kafka environment including any events: <br> ```rm -rf /tmp/kafka-logs /tmp/zookeeper```
