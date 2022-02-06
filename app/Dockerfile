@@ -20,4 +20,4 @@ RUN pip install -r requirements.txt
 # Copy entire project
 COPY . .
 
-CMD ["python", "./aaa.py"]
+CMD ["python", "./app.py"]
