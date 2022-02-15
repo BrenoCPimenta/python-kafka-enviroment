@@ -19,8 +19,7 @@ class ScraperException(Exception):
     """Exception for failing on fiding a Title"""
 
     def __init__(self, message):
-        super().__init__()
-        self.message = message
+        super().__init__(message)
 
 
 class TitleScraper:
@@ -37,21 +36,28 @@ class TitleScraper:
         """
         try:
             # First tries newspaper3k
-            #raise Exception('force selenium')
+            # raise Exception('force selenium')
             article = Article(url, language='pt')
             article.download()
             article.parse()
+            return article.title.strip()
         except:
             try:
                 # Than scrapes through selenium
                 article = Article(url, language='pt')
                 article.html = self.__get_html_with_selenium(url)
                 article.download_state = 2
-            except Exception as e:
-                raise ScraperException()
-        article.parse()
-
-        return article.title.strip()
+                article.parse()
+                return article.title.strip()
+            except:
+                try:
+                    title = self.get_title_by_url(url)
+                    if title != 'NULL' and title != '':
+                        return title
+                    else:
+                        raise ScraperException('Não foi possível capturar o título da URL')
+                except Exception as e:
+                    raise ScraperException(str(e))
 
     def __get_html_with_selenium(self, url):
         """
@@ -114,13 +120,16 @@ class TitleScraper:
                 return el.replace('-', ' ')
         return 'NULL'
 
-    def __get_title_by_url(self, url) -> str:
+    def get_title_by_url(self, url) -> str:
         """
-        Gets title directly from the URL
+        Verify if it is possible to get title
+        directly from the URL, if it is calls
+        the private method to perform the extraction
         """
-        print('__tituloURL')
         filters = ['.google','/render','/social_annotation','/start','pagina-','.jpeg','fato-ou-fake','.bmp','.png','.pdf']
         if any(s in url for s in filters):
             return 'NULL'
         title = self.__extract_title(url)
+        if len(title.split(' ')) < 9:
+            return 'NULL'
         return title
